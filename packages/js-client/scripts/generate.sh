@@ -18,7 +18,7 @@ function main {
   npm run build npm run build --workspace=@kibisis/pinakion-contract
 
   printf "%b generating typescript source code... \n" "${INFO_PREFIX}"
-  algokit generate client ../pinakion-contract/dist/ \
+  algokit generate client ../contract/dist/ \
     --language typescript  \
     --output src/index.ts
 

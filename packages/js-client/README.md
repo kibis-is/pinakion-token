@@ -52,12 +52,12 @@ TODO.
 
 ### 3.1. Useful Commands
 
-| Command            | Description                                                                                                                                                    |
-|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `npm run build`    | Bundles the TypeScript source code to the `dist/` directory.                                                                                                   |
-| `npm run generate` | Compiles the contracts from the [`@kibisis/pinakion-contract`](../pinakion-contract) package and generates the TypeScript source code to the `src/` directory. |
-| `npm run lint`     | Runs the linter based on the rules in `.eslintrc.cjs`.                                                                                                         |
-| `npm run test`     | Runs the tests located in the `__test__/` directory.                                                                                                           |
+| Command            | Description                                                                                                                                           |
+|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `npm run build`    | Bundles the TypeScript source code to the `dist/` directory.                                                                                          |
+| `npm run generate` | Compiles the contracts from the [`@kibisis/pinakion-contract`](../contract) package and generates the TypeScript source code to the `src/` directory. |
+| `npm run lint`     | Runs the linter based on the rules in `.eslintrc.cjs`.                                                                                                |
+| `npm run test`     | Runs the tests located in the `__test__/` directory.                                                                                                  |
 
 <sup>[Back to top ^][table-of-contents]</sup>
 

@@ -24,7 +24,6 @@
     "strictBindCallApply": false,
     "strictNullChecks": true,
     "strictPropertyInitialization": false,
-    "suppressImplicitAnyIndexErrors": true,
     "target": "ES2020"
   }
 }
