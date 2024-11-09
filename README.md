@@ -83,10 +83,10 @@ npm install
 
 ### 3.1. Packages
 
-| Name                                                            | Description                                                       |
-|-----------------------------------------------------------------|-------------------------------------------------------------------|
-| [`pinakion-contract`](./packages/pinakion-contract/README.md)   | The Kibisis Pinakion NFT contract written in TEALScript.          |
-| [`pinakion-js-client`](./packages/pinakion-js-client/README.md) | The JS client to interact with the Kibisis Pinakion NFT contract. |
+| Name                                                   | Description                                                       |
+|--------------------------------------------------------|-------------------------------------------------------------------|
+| [`contract`](./packages/pinakion-contract/README.md)   | The Kibisis Pinakion NFT contract written in TEALScript.          |
+| [`js-client`](./packages/pinakion-js-client/README.md) | The JS client to interact with the Kibisis Pinakion NFT contract. |
 
 <sup>[Back to top ^][table-of-contents]</sup>
 

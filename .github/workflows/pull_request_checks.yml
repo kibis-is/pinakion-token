@@ -15,7 +15,7 @@ jobs:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
       - name: "🔧 Setup"
-        uses: ./.github/actions/use-dependencies
+        uses: ./.github/actions/use-npm-dependencies
 
   get_changed_files:
     name: "Get Changed Files"
@@ -51,7 +51,7 @@ jobs:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
       - name: "🔧 Setup"
-        uses: ./.github/actions/use-dependencies
+        uses: ./.github/actions/use-npm-dependencies
       - name: "📥 Get PR Title"
         id: get_pr_title
         uses: actions/github-script@v7
@@ -80,7 +80,7 @@ jobs:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
       - name: "🔧 Setup"
-        uses: ./.github/actions/use-dependencies
+        uses: ./.github/actions/use-npm-dependencies
       - name: "🔍 Type Check"
         run: npm run check:types --workspace=@kibisis/pinakion-js-client
 
@@ -93,7 +93,7 @@ jobs:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
       - name: "🔧 Setup"
-        uses: ./.github/actions/use-dependencies
+        uses: ./.github/actions/use-npm-dependencies
       - name: "👕 Lint"
         run: npm run lint:contract
 
@@ -106,7 +106,7 @@ jobs:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
       - name: "🔧 Setup"
-        uses: ./.github/actions/use-dependencies
+        uses: ./.github/actions/use-npm-dependencies
       - name: "👕 Lint"
         run: npm run lint:js-client
 
@@ -118,7 +118,9 @@ jobs:
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
-      - name: "🔧 Setup"
-        uses: ./.github/actions/use-dependencies
+      - name: "🔧 Setup npm Dependencies"
+        uses: ./.github/actions/use-npm-dependencies
+      - name: "🔧 Setup AlgoKit"
+        uses: ./.github/actions/use-algokit
       - name: "🧪 Test"
         run: npm run test:js-client

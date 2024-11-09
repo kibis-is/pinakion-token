@@ -1,6 +1,6 @@
-name: "Use Dependencies"
+name: "Use npm Dependencies"
 
-description: "Checks if the dependencies have been cached with the hash of the package-lock.json file."
+description: "Checks if the npm dependencies have been cached with the hash of the package-lock.json file."
 
 runs:
   using: "composite"
