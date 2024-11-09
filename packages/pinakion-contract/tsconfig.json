@@ -3,9 +3,9 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
+    "module": "CommonJS",
     "strict": true,
     "skipLibCheck": true,
-    "target": "es2016"
+    "target": "ES2016"
   }
 }

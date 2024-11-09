@@ -1,6 +1,6 @@
 import { Contract } from '@algorandfoundation/tealscript';
 
-export class PinakionContract extends Contract {
+export class KibisisPinakionContract extends Contract {
   /**
    * Calculates the sum of two numbers
    *

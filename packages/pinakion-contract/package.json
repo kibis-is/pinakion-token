@@ -30,7 +30,6 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-prettier": "^5.0.1",
-    "shx": "^0.3.4",
     "typescript": "5.0.2"
   }
 }
