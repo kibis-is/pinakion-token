@@ -1,0 +1,124 @@
+name: "Pull Request Checks"
+
+on:
+  pull_request:
+
+jobs:
+  ##
+  # setup
+  ##
+
+  install:
+    name: "Install"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+
+  get_changed_files:
+    name: "Get Changed Files"
+    runs-on: ubuntu-latest
+    outputs:
+      changed_files: ${{ steps.get_changed_files.outputs.result }}
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "📥 Get List"
+        id: get_changed_files
+        uses: actions/github-script@v7
+        with:
+          debug: true
+          result-encoding: string
+          script: |
+            const changedFiles = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+            return changedFiles.data.map(f => f.filename).join(',');
+
+  ##
+  # validation
+  ##
+
+  validate_pr_title:
+    name: "Validate PR Title"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "📥 Get PR Title"
+        id: get_pr_title
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const { data } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            return data.title;
+      - name: "✅ Validate"
+        run: echo "${{ steps.get_pr_title.outputs.result }}" | npx commitlint
+
+  ##
+  # lint, type check and test
+  ##
+
+  check_types_js_client:
+    name: "Types Check: js-client"
+    needs: [install, get_changed_files, validate_pr_title]
+    runs-on: ubuntu-latest
+    if: contains(needs.get_changed_files.outputs.changed_files, 'packages/js-client/')
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "🔍 Type Check"
+        run: npm run check:types --workspace=@kibisis/pinakion-js-client
+
+  lint_contract:
+    name: "Lint: contract"
+    needs: [install, get_changed_files, validate_pr_title]
+    runs-on: ubuntu-latest
+    if: contains(needs.get_changed_files.outputs.changed_files, 'packages/contract/')
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "👕 Lint"
+        run: npm run lint:contract
+
+  lint_js_client:
+    name: "Lint: js-client"
+    needs: [install, get_changed_files, validate_pr_title]
+    runs-on: ubuntu-latest
+    if: contains(needs.get_changed_files.outputs.changed_files, 'packages/js-client/')
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "👕 Lint"
+        run: npm run lint:js-client
+
+  test_js_client:
+    name: "Test: js-client"
+    needs: [install, get_changed_files, validate_pr_title]
+    runs-on: ubuntu-latest
+    if: contains(needs.get_changed_files.outputs.changed_files, 'packages/js-client/')
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "🧪 Test"
+        run: npm run test:js-client
