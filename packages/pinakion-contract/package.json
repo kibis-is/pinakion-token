@@ -1,0 +1,36 @@
+{
+  "name": "@kibisis/pinakion-contract",
+  "description": "The Kibisis Pinakion NFT contract written in TEALScript.",
+  "version": "1.0.0",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kibis-is/pinakion-token"
+  },
+  "license": "AGPL-3.0-or-later",
+  "keywords": [
+    "algorand",
+    "avm",
+    "blockchain",
+    "voi"
+  ],
+  "scripts": {
+    "build": "./scripts/build.sh",
+    "compile": "tealscript src/*.avm.ts dist",
+    "lint": "eslint . --ext .ts",
+    "test": "exit 0"
+  },
+  "devDependencies": {
+    "@algorandfoundation/tealscript": "latest",
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-prettier": "^5.0.1",
+    "shx": "^0.3.4",
+    "typescript": "5.0.2"
+  }
+}
