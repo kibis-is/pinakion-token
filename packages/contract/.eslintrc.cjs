@@ -3,11 +3,12 @@ module.exports = {
     es2021: true,
   },
   extends: [
-    'airbnb-base',
+    'eslint:recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
-    'plugin:prettier/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -29,6 +30,7 @@ module.exports = {
         tsx: 'never',
       },
     ],
+    'import/no-unresolved': 'off',
     'prefer-const': 'off',
   },
   overrides: [

@@ -4,11 +4,12 @@ module.exports = {
     es2021: true,
   },
   extends: [
-    'airbnb-base',
+    'eslint:recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
-    'plugin:prettier/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -33,9 +34,14 @@ module.exports = {
     'import/no-extraneous-dependencies': [
       'error',
       {
-        devDependencies: ['**/*.test.ts'],
+        devDependencies: [
+          '__tests__/**/*.ts',
+          'jest.config.ts',
+          'vite.config.ts',
+        ],
       },
     ],
+    'import/no-unresolved': 'off',
     'prefer-const': 'off',
   }
 };
