@@ -2,7 +2,7 @@
   "name": "@kibisis/pinakion-contract",
   "description": "The Kibisis Pinakion NFT contract written in TEALScript.",
   "version": "1.0.0",
-  "private": false,
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/kibis-is/pinakion-token"
