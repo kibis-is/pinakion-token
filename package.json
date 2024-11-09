@@ -14,7 +14,8 @@
     "npm": ">=8"
   },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "prettier": "prettier --write \"**/*.{js,json,ts}\""
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
@@ -26,6 +27,8 @@
     "@semantic-release/npm": "^12.0.1",
     "@semantic-release/release-notes-generator": "^14.0.1",
     "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
     "semantic-release": "^24.1.2",
     "semantic-release-monorepo": "^8.0.2"
   }
