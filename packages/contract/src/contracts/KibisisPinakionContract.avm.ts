@@ -1,6 +1,7 @@
-import { Contract } from '@algorandfoundation/tealscript';
+// contracts
+import { ACL } from '@contracts/ACL.avm';
 
-export class KibisisPinakionContract extends Contract {
+export class KibisisPinakionContract extends ACL {
   /**
    * Calculates the sum of two numbers
    *

@@ -1,9 +1,14 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "module": "CommonJS",
+    "paths": {
+      "@client": [".client"],
+      "@contracts/*": ["src/contracts/*"]
+    },
     "strict": true,
     "skipLibCheck": true,
     "target": "ES2016"

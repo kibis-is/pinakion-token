@@ -4,11 +4,11 @@ SCRIPT_DIR=$(dirname "${0}")
 
 source "${SCRIPT_DIR}/set_vars.sh"
 
-# Public: Starts a local AVM network and compiles the TEAL contracts to the `dist/` directory.
+# Public: Starts a local AVM network and runs the contract's client tests against it.
 #
 # Examples
 #
-#   ./scripts/build.sh
+#   ./scripts/test.sh
 #
 # Returns exit code 0 if successful.
 function main {
@@ -18,9 +18,14 @@ function main {
 
   algokit localnet start
 
-  printf "%b compiling contracts... \n" "${INFO_PREFIX}"
-
+  # compile the contracts
   npm run compile
+
+  # generate the client
+  npm run generate:client
+
+  # run tests
+  npx jest
 
   printf "%b stopping localnet... \n" "${INFO_PREFIX}"
 
