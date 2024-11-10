@@ -14,6 +14,7 @@ runs:
     - name: "🔑 Set up cache key"
       id: cache-key
       run: echo "CACHE_KEY=algokit-${{ inputs.algokit_version }}-$(python --version | cut -d' ' -f2)" >> $GITHUB_ENV
+      shell: bash
     - name: "💾 Cache dependencies"
       id: algokit-cache
       uses: actions/cache@v3
