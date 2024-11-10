@@ -1,0 +1,27 @@
+name: "Use npm Dependencies"
+
+description: "Checks if the npm dependencies have been cached with the hash of the package-lock.json file."
+
+runs:
+  using: "composite"
+  steps:
+    - name: "🔧 Setup"
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.18.0'
+    - name: "💾 Cache dependencies"
+      uses: actions/cache@v4
+      id: npm-cache
+      with:
+        path: |
+          node_modules
+          ~/.cache/Cypress
+        key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          ${{ runner.os }}-npm-
+          ${{ runner.os }}-
+    - name: "📦 Install"
+      if: steps.npm-cache.outputs.cache-hit != 'true'
+      run: npm install
+      shell: bash

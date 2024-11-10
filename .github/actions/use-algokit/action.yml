@@ -1,0 +1,43 @@
+name: "Use AlgoKit"
+
+description: "Checks if the dependencies have been cached with the hash of the package-lock.json file."
+
+inputs:
+  algokit_version:
+    description: "The version of AlgoKit to install"
+    required: false
+    default: "latest"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "🔑 Set up cache key"
+      id: cache-key
+      run: echo "CACHE_KEY=algokit-${{ inputs.algokit_version }}-$(python --version | cut -d' ' -f2)" >> $GITHUB_ENV
+      shell: bash
+    - name: "💾 Cache dependencies"
+      id: algokit-cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ env.CACHE_KEY }}
+        restore-keys: |
+          ${{ runner.os }}-algokit-${{ inputs.algokit_version }}
+          ${{ runner.os }}-algokit-
+          ${{ runner.os }}-
+    - name: "🔧 Setup"
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    - name: "📤 Upgrade pip"
+      run: python -m pip install --upgrade pip
+      shell: bash
+    - name: "📦 Install"
+      if: steps.algokit-cache.outputs.cache-hit != 'true'
+      run: |
+        if [ "${{ inputs.algokit_version }}" = "latest" ]; then
+          pip install algokit  # Install the latest version
+        else
+          pip install algokit==${{ inputs.algokit_version }}
+        fi
+      shell: bash

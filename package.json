@@ -1,0 +1,42 @@
+{
+  "name": "pinakion-token",
+  "private": true,
+  "description": "The monorepo that contains the smart contracts and clients for the official Kibisis Pinakion token.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kibis-is/pinakion-token"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20.18.0",
+    "npm": ">=8"
+  },
+  "scripts": {
+    "build:contract": "npm run build --workspace=@kibisis/pinakion-contract",
+    "build:js-client": "npm run build --workspace=@kibisis/pinakion-js-client",
+    "lint:contract": "npm run lint --workspace=@kibisis/pinakion-contract",
+    "lint:js-client": "npm run lint --workspace=@kibisis/pinakion-js-client",
+    "prepare": "husky",
+    "prettier": "prettier --write \"**/*.{js,json,ts}\"",
+    "test:contract": "npm run test --workspace=@kibisis/pinakion-contract",
+    "test:js-client": "npm run test --workspace=@kibisis/pinakion-js-client"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.0",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.1",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "semantic-release": "^24.1.2",
+    "semantic-release-monorepo": "^8.0.2",
+    "shx": "^0.3.4"
+  }
+}
