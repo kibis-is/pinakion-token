@@ -41,6 +41,7 @@ jobs:
 
   release_js_client:
     name: "🔖 Release - js-client"
+    needs: release_contract
     runs-on: ubuntu-latest
     environment: production
     steps:
