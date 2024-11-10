@@ -110,11 +110,11 @@ jobs:
       - name: "👕 Lint"
         run: npm run lint:js-client
 
-  test_js_client:
-    name: "Test: js-client"
+  test_contract:
+    name: "Test: contract"
     needs: [install, get_changed_files, validate_pr_title]
     runs-on: ubuntu-latest
-    if: contains(needs.get_changed_files.outputs.changed_files, 'packages/js-client/')
+    if: contains(needs.get_changed_files.outputs.changed_files, 'packages/contract/')
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
@@ -123,4 +123,4 @@ jobs:
       - name: "🔧 Setup AlgoKit"
         uses: ./.github/actions/use-algokit
       - name: "🧪 Test"
-        run: npm run test:js-client
+        run: npm run test:contract
