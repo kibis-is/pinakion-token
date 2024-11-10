@@ -34,5 +34,10 @@ runs:
       shell: bash
     - name: "📦 Install"
       if: steps.algokit-cache.outputs.cache-hit != 'true'
-      run: pip install algokit==${{ inputs.algokit_version }}
+      run: |
+        if [ "${{ inputs.algokit_version }}" = "latest" ]; then
+          pip install algokit  # Install the latest version
+        else
+          pip install algokit==${{ inputs.algokit_version }}
+        fi
       shell: bash
