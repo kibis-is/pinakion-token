@@ -6,8 +6,10 @@
     "forceConsistentCasingInFileNames": true,
     "module": "CommonJS",
     "paths": {
+      "@app/contracts/*": ["src/contracts/*"],
+      "@app/types": ["src/types"],
       "@client": [".client"],
-      "@contracts/*": ["src/contracts/*"]
+      "@test/utils/*": ["test/utils/*"]
     },
     "strict": true,
     "skipLibCheck": true,

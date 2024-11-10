@@ -1,5 +1,8 @@
 import { Contract } from '@algorandfoundation/tealscript';
 
+// types
+import type { IACLBoxKey } from '@app/types';
+
 /**
  * Manages the access control for the contract.
  *
@@ -7,11 +10,18 @@ import { Contract } from '@algorandfoundation/tealscript';
  * * Admins: 1
  */
 export class ACL extends Contract {
-  admins = BoxMap<Address, uint64>({ prefix: 'acl:' });
+  _members = BoxMap<IACLBoxKey, uint64>();
 
   /**
    * private methods
    */
+
+  private _acl_createMemberKey(address: Address): IACLBoxKey {
+    return {
+      address: address,
+      prefix: 'acl',
+    };
+  }
 
   /**
    * Checks if a given address has admin rights.
@@ -19,8 +29,12 @@ export class ACL extends Contract {
    * @param address
    * @returns true if the address is an admin, false otherwise.
    */
-  private isAdmin(address: Address): boolean {
-    return this.admins(address).exists && this.admins(address).value === 1;
+  private _acl_isAdmin(address: Address): boolean {
+    return (
+      this.txn.sender === globals.creatorAddress ||
+      (this._members(this._acl_createMemberKey(address)).exists &&
+        this._members(this._acl_createMemberKey(address)).value === 1)
+    );
   }
 
   /**
@@ -31,14 +45,11 @@ export class ACL extends Contract {
    * Removes a given address from the ACL. Sender must be an admin.
    *
    * @param address The address to remove.
-   * @throws {Error} If the sender is not an admin.
    */
   acl_remove(address: Address): void {
-    if (!this.isAdmin(this.txn.sender)) {
-      throw Error('address "' + this.txn.sender + '" is not authorized');
-    }
+    assert(this._acl_isAdmin(this.txn.sender), 'sender is not authorized');
 
-    this.admins(address).delete();
+    this._members(this._acl_createMemberKey(address)).delete();
   }
 
   /**
@@ -46,13 +57,10 @@ export class ACL extends Contract {
    *
    * @param address The address to set.
    * @param role The role to give.
-   * @throws {Error} If the sender is not an admin.
    */
   acl_set(address: Address, role: uint64): void {
-    if (!this.isAdmin(this.txn.sender)) {
-      throw Error('address "' + this.txn.sender + '" is not authorized');
-    }
+    assert(this._acl_isAdmin(this.txn.sender), 'sender is not authorized');
 
-    this.admins(address).value = role;
+    this._members(this._acl_createMemberKey(address)).value = role;
   }
 }

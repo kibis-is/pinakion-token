@@ -4,9 +4,10 @@ const config: Config = {
   moduleFileExtensions: ['js', 'ts'],
   moduleNameMapper: {
     '@client(.*)': '<rootDir>/.client/$1',
+    '@test/(.*)': '<rootDir>/test/$1',
   },
   rootDir: '.',
-  setupFilesAfterEnv: ['<rootDir>/__tests__/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
   testEnvironment: 'node',
   testTimeout: 60000,
   testMatch: ['<rootDir>/src/**/*.test.ts'],

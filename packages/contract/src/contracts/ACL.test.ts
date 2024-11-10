@@ -1,54 +1,91 @@
 import { algorandFixture } from '@algorandfoundation/algokit-utils/testing';
+import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount';
+import type { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account';
+import type { AppReference } from '@algorandfoundation/algokit-utils/types/app';
+import { type Account, generateAccount } from 'algosdk';
 
 // client
-import { KibisisPinakionContractClient } from '@client';
+import { KibisisPinakionContractClient as ContractClient } from '@client';
+
+// utils
+import createACLBoxReference from '@test/utils/createACLBoxReference';
 
 describe('ACL', () => {
   const fixture = algorandFixture();
-  let client: KibisisPinakionContractClient;
-
-  beforeAll(async () => {
-    await fixture.beforeEach();
-
-    const { testAccount } = fixture.context;
-    const { algod } = fixture.algorand.client;
-
-    // create the client
-    client = new KibisisPinakionContractClient(
-      {
-        sender: testAccount,
-        resolveBy: 'id',
-        id: 0,
-      },
-      algod
-    );
-
-    await client.create.createApplication({});
-  });
+  let appReference: AppReference;
+  let client: ContractClient;
+  let creatorAccount: Account & TransactionSignerAccount;
 
   beforeEach(async () => {
     await fixture.beforeEach();
+
+    creatorAccount = fixture.context.testAccount;
+    client = new ContractClient(
+      {
+        id: 0,
+        resolveBy: 'id',
+        sender: creatorAccount,
+      },
+      fixture.algorand.client.algod
+    );
+
+    // deploy the contract
+    await client.create.createApplication({});
+    // fund the account
+    await client.appClient.fundAppAccount({
+      amount: AlgoAmount.Algos(1),
+      sender: creatorAccount,
+    });
+
+    appReference = await client.appClient.getAppReference();
   });
 
-  test('sum', async () => {
-    const a = 13;
-    const b = 37;
-    const sum = await client.doMath({ a, b, operation: 'sum' });
+  describe('acl_setAdmin', () => {
+    it('should fail if the sender is not the creator', async () => {
+      const address = generateAccount().addr;
+      const nonAdminAccount = await fixture.context.generateAccount({
+        initialFunds: AlgoAmount.Algos(10),
+      });
+      const _client = new ContractClient(
+        {
+          id: appReference.appId,
+          resolveBy: 'id',
+          sender: nonAdminAccount,
+        },
+        fixture.algorand.client.algod
+      );
 
-    expect(sum.return?.valueOf()).toBe(BigInt(a + b));
-  });
+      try {
+        await _client.aclSet(
+          {
+            address,
+            role: 1,
+          },
+          {
+            boxes: [
+              createACLBoxReference({
+                address: nonAdminAccount.addr,
+                appID: appReference.appId as number,
+              }),
+            ],
+          }
+        );
+      } catch (error) {
+        expect((error as any).traces[0].message).toContain('assert failed');
+      }
+    });
 
-  test('difference', async () => {
-    const a = 13;
-    const b = 37;
-    const diff = await client.doMath({ a, b, operation: 'difference' });
+    it('should add an admin if the sender is the creator', async () => {
+      const address = generateAccount().addr;
 
-    expect(diff.return?.valueOf()).toBe(BigInt(a >= b ? a - b : b - a));
-  });
-
-  test('hello', async () => {
-    const diff = await client.hello({ name: 'world!' });
-
-    expect(diff.return?.valueOf()).toBe('Hello, world!');
+      await client.appClient.fundAppAccount({
+        amount: AlgoAmount.Algos(1),
+        sender: creatorAccount,
+      });
+      await client.aclSet({
+        address,
+        role: 1,
+      });
+    });
   });
 });

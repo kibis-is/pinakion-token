@@ -1,5 +1,5 @@
 // contracts
-import { ACL } from '@contracts/ACL.avm';
+import { ACL } from '@app/contracts/ACL.avm';
 
 export class KibisisPinakionContract extends ACL {
   /**
