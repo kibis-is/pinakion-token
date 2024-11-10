@@ -22,9 +22,8 @@ runs:
         path: ~/.cache/pip
         key: ${{ env.CACHE_KEY }}
         restore-keys: |
-          ${{ runner.os }}-algokit-${{ inputs.algokit_version }}
-          ${{ runner.os }}-algokit-
-          ${{ runner.os }}-
+          algokit-${{ inputs.algokit_version }}
+          algokit-
     - name: "🔧 Setup"
       uses: actions/setup-python@v4
       with:

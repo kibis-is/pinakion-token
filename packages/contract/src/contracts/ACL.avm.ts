@@ -10,13 +10,13 @@ import type { IACLBoxKey } from '@app/types';
  * * Admins: 1
  */
 export class ACL extends Contract {
-  _members = BoxMap<IACLBoxKey, uint64>();
+  members = BoxMap<IACLBoxKey, uint64>();
 
   /**
    * private methods
    */
 
-  private _acl_createMemberKey(address: Address): IACLBoxKey {
+  private _createMemberKey(address: Address): IACLBoxKey {
     return {
       address: address,
       prefix: 'acl',
@@ -29,11 +29,10 @@ export class ACL extends Contract {
    * @param address
    * @returns true if the address is an admin, false otherwise.
    */
-  private _acl_isAdmin(address: Address): boolean {
+  protected _isAdmin(address: Address): boolean {
     return (
       this.txn.sender === globals.creatorAddress ||
-      (this._members(this._acl_createMemberKey(address)).exists &&
-        this._members(this._acl_createMemberKey(address)).value === 1)
+      (this.members(this._createMemberKey(address)).exists && this.members(this._createMemberKey(address)).value === 1)
     );
   }
 
@@ -42,25 +41,25 @@ export class ACL extends Contract {
    */
 
   /**
-   * Removes a given address from the ACL. Sender must be an admin.
+   * Removes a given address from the ACL. Sender must have "Admin" role.
    *
    * @param address The address to remove.
    */
   acl_remove(address: Address): void {
-    assert(this._acl_isAdmin(this.txn.sender), 'sender is not authorized');
+    assert(this._isAdmin(this.txn.sender), 'sender is not authorized');
 
-    this._members(this._acl_createMemberKey(address)).delete();
+    this.members(this._createMemberKey(address)).delete();
   }
 
   /**
-   * Sets a given address with the specified role. Sender must be an admin.
+   * Sets a given address with the specified role. Sender must have "Admin" role.
    *
    * @param address The address to set.
    * @param role The role to give.
    */
   acl_set(address: Address, role: uint64): void {
-    assert(this._acl_isAdmin(this.txn.sender), 'sender is not authorized');
+    assert(this._isAdmin(this.txn.sender), 'sender is not authorized');
 
-    this._members(this._acl_createMemberKey(address)).value = role;
+    this.members(this._createMemberKey(address)).value = role;
   }
 }
