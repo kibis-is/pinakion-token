@@ -10,12 +10,19 @@ import type { IACLBoxKey } from '@app/types';
  * * Admins: 1
  */
 export class ACL extends Contract {
-  members = BoxMap<IACLBoxKey, uint64>();
+  protected members = BoxMap<IACLBoxKey, uint64>();
 
   /**
    * private methods
    */
 
+  /**
+   * Creates the member key used in the members box.
+   *
+   * @param address The address of the member.
+   * @returns The member box key based on the address.
+   * @private
+   */
   private _createMemberKey(address: Address): IACLBoxKey {
     return {
       address: address,
@@ -24,10 +31,15 @@ export class ACL extends Contract {
   }
 
   /**
+   * protected methods
+   */
+
+  /**
    * Checks if a given address has admin rights.
    *
    * @param address
    * @returns true if the address is an admin, false otherwise.
+   * @protected
    */
   protected _isAdmin(address: Address): boolean {
     return (
@@ -44,8 +56,9 @@ export class ACL extends Contract {
    * Removes a given address from the ACL. Sender must have "Admin" role.
    *
    * @param address The address to remove.
+   * @public
    */
-  acl_remove(address: Address): void {
+  public acl_remove(address: Address): void {
     assert(this._isAdmin(this.txn.sender), 'sender is not authorized');
 
     this.members(this._createMemberKey(address)).delete();
@@ -56,8 +69,9 @@ export class ACL extends Contract {
    *
    * @param address The address to set.
    * @param role The role to give.
+   * @public
    */
-  acl_set(address: Address, role: uint64): void {
+  public acl_set(address: Address, role: uint64): void {
     assert(this._isAdmin(this.txn.sender), 'sender is not authorized');
 
     this.members(this._createMemberKey(address)).value = role;

@@ -1,12 +1,16 @@
 import { algorandFixture } from '@algorandfoundation/algokit-utils/testing';
 import type { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account';
 import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount';
-import type { AppReference } from '@algorandfoundation/algokit-utils/types/app';
-import { type Account, generateAccount } from 'algosdk';
+import type {
+  AppCallTransactionResult,
+  AppCallTransactionResultOfType,
+  AppReference,
+} from '@algorandfoundation/algokit-utils/types/app';
+import { ABIUintType, type Account, generateAccount } from 'algosdk';
 import { v4 as uuid } from 'uuid';
 
 // client
-import { PinakionClient } from '@client';
+import { MethodReturn, PinakionClient, Pinakion } from '@client';
 
 // utils
 import createACLBoxReference from '@test/utils/createACLBoxReference';
@@ -54,6 +58,53 @@ describe('Pinakion', () => {
       }
 
       expect(isZeroAddress(owner)).toBe(true);
+    });
+  });
+
+  describe('arc72_tokenURI', () => {
+    it('should return an empty string if the token does not exist', async () => {
+      const metadataURI = await client.arc72TokenUri({
+        id: 100,
+      });
+
+      expect(metadataURI.return?.valueOf()).toBe('');
+    });
+
+    it('should return the metadata for the token', async () => {
+      // arrange
+      const deviceID = uuid();
+      const founder = true;
+      const toAddress = generateAccount().addr;
+      let metadataURI: AppCallTransactionResultOfType<MethodReturn<keyof Pinakion['methods']>> &
+        AppCallTransactionResult;
+      let metadata: Record<string, any>;
+      // act
+      const result = await client.mint({
+        to: toAddress,
+        founder,
+        deviceID,
+      });
+
+      if (!result.confirmation?.logs) {
+        throw new Error('no result returned in minting');
+      }
+
+      // assert
+      metadataURI = await client.arc72TokenUri({
+        id: new ABIUintType(64).decode(result.confirmation?.logs[0].slice(4)),
+      });
+
+      if (!metadataURI.return) {
+        throw new Error('no result returned when getting metadata');
+      }
+
+      metadata = JSON.parse((metadataURI.return.valueOf() as string).replace('data:application/json;utf8,', ''));
+
+      expect(metadata.description).toBe('The official Kibisis identity token.');
+      expect(metadata.name).toBe('Kibisis Pinakion');
+      expect(metadata.properties.deviceID).toBe(deviceID);
+      expect(metadata.properties.founder).toBe(founder);
+      expect(metadata.properties.version).toBe(1);
     });
   });
 

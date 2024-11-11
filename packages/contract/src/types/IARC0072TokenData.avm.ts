@@ -1,7 +1,9 @@
 interface IARC0072TokenData {
   controller: Address;
-  metadataURI: bytes;
+  deviceID: string;
+  founder: boolean;
   owner: Address;
+  version: uint64;
 }
 
 export default IARC0072TokenData;
