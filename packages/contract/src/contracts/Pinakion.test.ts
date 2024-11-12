@@ -6,7 +6,7 @@ import type {
   AppCallTransactionResultOfType,
   AppReference,
 } from '@algorandfoundation/algokit-utils/types/app';
-import { ABIUintType, type Account, generateAccount } from 'algosdk';
+import { type Account, bigIntToBytes, generateAccount } from 'algosdk';
 import { v4 as uuid } from 'uuid';
 
 // client
@@ -15,6 +15,7 @@ import { MethodReturn, PinakionClient, Pinakion } from '@client';
 // utils
 import createACLBoxReference from '@test/utils/createACLBoxReference';
 import isZeroAddress from '@test/utils/isZeroAddress';
+import mintToken from '@test/utils/mintToken';
 
 describe('Pinakion', () => {
   const fixture = algorandFixture();
@@ -49,7 +50,7 @@ describe('Pinakion', () => {
   describe('arc72_ownerOf', () => {
     it(`should return a zero address if the token doesn't exist`, async () => {
       const result = await client.arc72OwnerOf({
-        id: 100,
+        tokenId: 100,
       });
       const owner = result.return?.valueOf();
 
@@ -61,10 +62,20 @@ describe('Pinakion', () => {
     });
   });
 
+  describe('arc72_tokenByIndex', () => {
+    it('should return the index', async () => {
+      const result = await client.arc72TokenByIndex({
+        index: 100,
+      });
+
+      expect(result.return?.valueOf()).toEqual(BigInt(100));
+    });
+  });
+
   describe('arc72_tokenURI', () => {
     it('should return an empty string if the token does not exist', async () => {
       const metadataURI = await client.arc72TokenUri({
-        id: 100,
+        tokenId: 100,
       });
 
       expect(metadataURI.return?.valueOf()).toBe('');
@@ -75,29 +86,26 @@ describe('Pinakion', () => {
       const deviceID = uuid();
       const founder = true;
       const toAddress = generateAccount().addr;
+      const tokenID = await mintToken({
+        client,
+        deviceID,
+        founder,
+        to: toAddress,
+      });
       let metadataURI: AppCallTransactionResultOfType<MethodReturn<keyof Pinakion['methods']>> &
         AppCallTransactionResult;
       let metadata: Record<string, any>;
+
       // act
-      const result = await client.mint({
-        to: toAddress,
-        founder,
-        deviceID,
-      });
-
-      if (!result.confirmation?.logs) {
-        throw new Error('no result returned in minting');
-      }
-
-      // assert
       metadataURI = await client.arc72TokenUri({
-        id: new ABIUintType(64).decode(result.confirmation?.logs[0].slice(4)),
+        tokenId: tokenID,
       });
 
       if (!metadataURI.return) {
         throw new Error('no result returned when getting metadata');
       }
 
+      // assert
       metadata = JSON.parse((metadataURI.return.valueOf() as string).replace('data:application/json;utf8,', ''));
 
       expect(metadata.description).toBe('The official Kibisis identity token.');
@@ -113,6 +121,70 @@ describe('Pinakion', () => {
       const totalSupply = await client.arc72TotalSupply({});
 
       expect(totalSupply.return?.valueOf()).toEqual(BigInt(0));
+    });
+  });
+
+  describe('arc72_transferFrom', () => {
+    it('should error when the token does not exist', async () => {
+      const tokenId = 100;
+
+      try {
+        await client.arc72TransferFrom(
+          {
+            from: generateAccount().addr,
+            to: generateAccount().addr,
+            tokenId,
+          },
+          {
+            boxes: [
+              {
+                appId: appReference.appId,
+                name: bigIntToBytes(tokenId, 64),
+              },
+            ],
+          }
+        );
+      } catch (error) {
+        expect((error as any).message).toContain('assert failed');
+      }
+    });
+
+    it('should transfer to new owner', async () => {
+      // arrange
+      const to = generateAccount().addr;
+      const tokenId = await mintToken({
+        client,
+        to: creatorAccount.addr,
+      });
+      let owner = await client.arc72OwnerOf({
+        tokenId,
+      });
+
+      expect(owner.return?.valueOf()).toBe(creatorAccount.addr);
+
+      // act
+      await client.arc72TransferFrom(
+        {
+          from: creatorAccount.addr,
+          to,
+          tokenId,
+        },
+        {
+          boxes: [
+            {
+              appId: appReference.appId,
+              name: bigIntToBytes(tokenId, 64),
+            },
+          ],
+        }
+      );
+
+      // assert
+      owner = await client.arc72OwnerOf({
+        tokenId,
+      });
+
+      expect(owner.return?.valueOf()).toBe(to);
     });
   });
 
